@@ -1,0 +1,22 @@
+{
+  "author": {
+    "name": "David Pettifer",
+    "email": "david.pettifer@dizzy.co.uk",
+    "url": "www.dizzy.co.uk"
+  },
+  "name": "couchdb-migrator",
+  "description": "Utility belt for creating, resetting and seeding couchdb databases",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mrdizzy/couchdb-migrator.git"
+  },
+  "main": "index.js",
+  "dependencies": {
+  },
+  "devDependencies": {
+  },
+  "engines": {
+    "node": "*"
+  },
+}
