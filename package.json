@@ -16,7 +16,7 @@
   },
   "bin": {
     "migrate": "./bin/migrate"
-  }
+  },
   "devDependencies": {
   },
   "engines": {
