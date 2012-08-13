@@ -14,6 +14,9 @@
   "main": "index.js",
   "dependencies": {
   },
+  "bin": {
+    "migrate": "./bin/migrate"
+  }
   "devDependencies": {
   },
   "engines": {
