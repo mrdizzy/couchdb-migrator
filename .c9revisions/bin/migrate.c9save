@@ -1,2 +1,3 @@
 {"ts":1344855989094,"silentsave":true,"restoring":false,"patch":[[]],"length":0}
 {"contributors":[],"silentsave":false,"ts":1344855999511,"patch":[[{"diffs":[[1,"console.log(\"MIGRATE\");"]],"start1":0,"start2":0,"length1":0,"length2":23}]],"length":23,"saved":false}
+{"contributors":[],"silentsave":false,"ts":1345109873687,"patch":[[{"diffs":[[-1,"console.log(\"MIGRATE\");"],[1,"var migrator = require('./../index');\n\nif (process.argv[2] == 'reset') {\n migrator.resetDb(function(err, response) {\n        if(err) {\n            console.log(\"Reset was not successful: \", err);\n        } else {\n            console.log(\"Reset was successful!\", response);\n        }\n    });\n}"]],"start1":0,"start2":0,"length1":23,"length2":291}]],"length":291,"saved":false}
