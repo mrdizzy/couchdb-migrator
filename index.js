@@ -1,8 +1,8 @@
 var docs = require('./../../config/database').documents,
-    db = require('./../../config/database').db;
+    databases = require('./../../config/database');
 
-var resetDb = function(callback) {
-    db.destroy(function(error, response) {
+var resetDb = function(database_name, callback) {
+    databases[database_name].destroy(function(error, response) {
         if (error) {
             callback(error, response);
         }
@@ -12,18 +12,18 @@ var resetDb = function(callback) {
     })
 }
 
-var createDb = function(callback) {
-    db.create(function(err, res) {
+var createDb = function(database_name, callback) {
+    databases[database_name].create(function(err, res) {
         if (err) {
             callback(err, res);
         }
         else {
-            db.save(docs, function(err, res) {
+            databases[database_name].save(docs, function(err, res) {
                 if (err) {
                     callback(err, res);
                 }
                 else {
-                    setUpSecurity(function(error, response) {
+                    setUpSecurity(database_name, function(error, response) {
                         if (error) {
                             callback(error, response)
                         }
@@ -38,8 +38,8 @@ var createDb = function(callback) {
 }
 // Defaults to admin only allowing access to database
 
-function setUpSecurity(callback) {
-    db.save("_security", {
+function setUpSecurity(database_name,callback) {
+    databases[database_name].save("_security", {
         "admins": {
             "names": [],
             "roles": ["admin"]
@@ -51,6 +51,6 @@ function setUpSecurity(callback) {
     }, callback)
 }
 
-module.exports.db = db;
+module.exports.databases = databases;
 module.exports.createDb = createDb;
 module.exports.resetDb = resetDb;
