@@ -1,13 +1,16 @@
-var docs = require('./../../config/database').documents,
-    databases = require('./../../config/database');
-
+var databases = require('./../../config/database');
 var resetDb = function(database_name, callback) {
     databases[database_name].destroy(function(error, response) {
         if (error) {
+            if (error.error == "not_found") {
+                createDb(database_name, callback)
+            }
+            else {
             callback(error, response);
+            }
         }
         else {
-            createDb(callback);
+            createDb(database_name, callback);
         }
     })
 }
@@ -18,7 +21,7 @@ var createDb = function(database_name, callback) {
             callback(err, res);
         }
         else {
-            databases[database_name].save(docs, function(err, res) {
+            databases[database_name].save(databases[database_name].documents, function(err, res) {
                 if (err) {
                     callback(err, res);
                 }
