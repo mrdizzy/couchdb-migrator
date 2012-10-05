@@ -3,7 +3,6 @@
 var migrator = require('./../index');
 
 if (process.argv[2] == 'reset') {
-console.log(
  migrator.resetDb(process.argv[3], function(err, response) {
         if(err) {
             console.log("Reset was not successful: ", err);
