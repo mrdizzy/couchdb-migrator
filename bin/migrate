@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 var migrator = require('./../index');
 
 if (process.argv[2] == 'reset') {
