@@ -83,7 +83,7 @@ var dumpToJSON = function(database_name) {
                 }
             })
         }, function(err) {
-            fs.writeFile("results.json", JSON.stringify(dump), function(err) {
+            fs.writeFile(database_name + ".json", JSON.stringify(dump), function(err) {
                 if (err) {
                     console.log(err);
                 }
