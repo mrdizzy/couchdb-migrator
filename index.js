@@ -1,11 +1,21 @@
-var databases = require('./../../config/database'),
-    _ = require('underscore'),
+var _ = require('underscore'),
     async = require('async'),
     fs = require('fs'),
     bufferjs = require('bufferjs');
 
+var cradle = require('cradle'),
+    connection = new(cradle.Connection)('https://casamiento.iriscouch.com', 443, {
+        auth: {
+            username: "casamiento",
+            password: "floppsy1"
+        },
+        cache: false
+    });
+
+
 var resetDb = function(database_name, callback) {
-    databases[database_name].destroy(function(error, response) {
+    var database = connection.database(database_name);
+    database.destroy(function(error, response) {
         if (error) {
             if (error.error == "not_found") {
                 createDb(database_name, callback)
@@ -20,13 +30,15 @@ var resetDb = function(database_name, callback) {
     })
 }
 
-var createDb = function(database_name, callback) {
-    databases[database_name].create(function(err, res) {
+var createDb = function(database_name, seed_file, callback) {
+    var database = connection.database(database_name);
+    var seed_file = require('./../../seed')
+    database.create(function(err, res) {
         if (err) {
             callback(err, res);
         }
         else {
-            databases[database_name].save(databases[database_name].documents, function(err, res) {
+            database.save(seed_file, function(err, res) {
                 if (err) {
                     callback(err, res);
                 }
@@ -47,7 +59,8 @@ var createDb = function(database_name, callback) {
 // Defaults to admin only allowing access to database
 
     function setUpSecurity(database_name, callback) {
-        databases[database_name].save("_security", {
+        var database = connection.database(database_name);
+        database.save("_security", {
             "admins": {
                 "names": [],
                 "roles": ["admin"]
@@ -62,14 +75,16 @@ var createDb = function(database_name, callback) {
     // DUMP 
 
 var dumpToJSON = function(database_name) {
+
+    var database = connection.database(database_name);
     var dump = [];
 
-    databases[database_name].all(function(err, res) {
+    database.all(function(err, res) {
         var docs = _.map(res, function(doc) {
             return (doc);
         })
         async.forEach(docs, function(doc, callback) {
-            databases[database_name].get(doc.id, function(err, res) {
+            database.get(doc.id, function(err, res) {
                 delete res._rev
                 dump.push(res)
                 if (res._attachments) {
@@ -96,8 +111,10 @@ var dumpToJSON = function(database_name) {
 
     function handleAttachments(doc, attachments, cb) {
         var collated = {}
+
+        var database = connection.database(database_name);
         async.forEach(Object.keys(attachments), function(filename, callback) {
-            var stream = databases[database_name].getAttachment(doc.id, filename)
+            var stream = database.getAttachment(doc.id, filename)
             var file = []
             stream.on("data", function(chunk) {
                 file.push(chunk)
@@ -115,17 +132,18 @@ var dumpToJSON = function(database_name) {
     }
 }
 
-var importFromJSON = function(database_name) {
-    fs.readFile('results.json', 'utf-8', function(err, res) {
+var importFromJSON = function(file, database_name) {
+
+    var database = connection.database(database_name);
+    fs.readFile(file, 'utf-8', function(err, res) {
         var doc = JSON.parse(res)
-        databases[database_name].save(doc, function(e, r) {
+        database.save(doc, function(e, r) {
             console.log(e, r)
         })
     })
 }
 
-module.exports.importFromJSON;
+module.exports.importFromJSON = importFromJSON;
 module.exports.dumpToJSON = dumpToJSON;
-module.exports.databases = databases;
 module.exports.createDb = createDb;
 module.exports.resetDb = resetDb;

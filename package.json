@@ -14,7 +14,9 @@
   "main": "index",
   "dependencies": {
       "cradle": "*",
-      "bufferjs": "*"
+      "async": "*",
+      "bufferjs": "*",
+      "underscore": "*"
   },
   "bin": {
     "migrate": "./bin/migrate"
