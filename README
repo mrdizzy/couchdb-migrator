@@ -1,3 +1,12 @@
+This is a small module for loading and dumping JSON data to and from CouchDB.
+It is designed to be run from the command line. The following commands are available:
+
+- dumpToJSON --database <database> --file <output_file>
+- createDB --database <database> --file <seed_file>
+- resetDB --database <database> --file <seed_file>
+- importFromJSON --database <database> --file <seed_file>
+
+
 Requires a database.js located in the root config directory: /config/database.js
 
 var cradle = require('cradle');

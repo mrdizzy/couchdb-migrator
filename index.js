@@ -12,7 +12,6 @@ var cradle = require('cradle'),
         cache: false
     });
 
-
 var resetDb = function(database_name, seed_file, callback) {
     var database = connection.database(database_name);
     database.destroy(function(error, response) {
@@ -32,7 +31,7 @@ var resetDb = function(database_name, seed_file, callback) {
 
 var createDb = function(database_name, seed_file, callback) {
     var database = connection.database(database_name);
-    var seed_file = require('./../../seed')
+    var seed_file = require('./../../' + seed_file)
     database.create(function(err, res) {
         if (err) {
             callback(err, res);
@@ -78,9 +77,9 @@ var dumpToJSON = function(database_name, file, callback) {
 
     var database = connection.database(database_name);
     var dump = [];
-
     database.all(function(err, res) {
-        var docs = _.map(res, function(doc) {
+
+var docs = _.map(res, function(doc) {
             return (doc);
         })
         async.forEach(docs, function(doc, callback) {
