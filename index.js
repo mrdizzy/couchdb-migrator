@@ -13,7 +13,7 @@ var cradle = require('cradle'),
     });
 
 
-var resetDb = function(database_name, callback) {
+var resetDb = function(database_name, seed_file, callback) {
     var database = connection.database(database_name);
     database.destroy(function(error, response) {
         if (error) {
@@ -74,7 +74,7 @@ var createDb = function(database_name, seed_file, callback) {
 
     // DUMP 
 
-var dumpToJSON = function(database_name) {
+var dumpToJSON = function(database_name, file, callback) {
 
     var database = connection.database(database_name);
     var dump = [];
@@ -132,14 +132,12 @@ var dumpToJSON = function(database_name) {
     }
 }
 
-var importFromJSON = function(file, database_name) {
+var importFromJSON = function(database_name, file, callback) {
 
     var database = connection.database(database_name);
     fs.readFile(file, 'utf-8', function(err, res) {
         var doc = JSON.parse(res)
-        database.save(doc, function(e, r) {
-            console.log(e, r)
-        })
+        database.save(doc, callback)
     })
 }
 

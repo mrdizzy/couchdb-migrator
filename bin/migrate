@@ -1,7 +1,20 @@
 #!/usr/bin/env node
 
-var migrator = require('./../index');
+var migrator = require('./../index'),
+    cli = require('commander');
+    
+    cli.version('0.0.1')
+    .option('-d, --database', "Database name")
+    .option('-f, --file [type]', "Source file/output file")
+    .parse(process.argv);
+    
+    
+var callback = function(err, response) {
+    console.log(err, response);
+}
 
- migrator[process.argv[2]](process.argv[3], function(err, response) {
-         console.log(err, response);
-})
+if (!cli.file) {
+    console.log("No cli file");
+}
+
+migrator[cli.args[0]](cli.database,cli.file, callback)  
