@@ -4,7 +4,7 @@ var migrator = require('./../index'),
     cli = require('commander');
     
     cli.version('0.0.1')
-    .option('-d, --database', "Database name")
+    .option('-d, --database [type]', "Database name")
     .option('-f, --file [type]', "Source file/output file")
     .parse(process.argv);
     
