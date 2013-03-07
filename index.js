@@ -1,18 +1,17 @@
 var _ = require('underscore'),
     async = require('async'),
     fs = require('fs'),
-    bufferjs = require('bufferjs');
-
-var cradle = require('cradle'),
-    connection = new(cradle.Connection)('https://casamiento.iriscouch.com', 443, {
+    database = require(__dirname + '/../../config/database'),
+    cradle = require('cradle'),
+    connection = new(cradle.Connection)(database.host, database.port, {
         auth: {
-            username: "casamiento",
-            password: "floppsy1"
+            username: database.username,
+            password: database.password
         },
         cache: false
     });
 
-var resetDb = function(database_name, seed_file, callback) {
+var reset = function(database_name, seed_file, callback) {
     var database = connection.database(database_name);
     database.destroy(function(error, response) {
         if (error) {
@@ -29,7 +28,7 @@ var resetDb = function(database_name, seed_file, callback) {
     })
 }
 
-var createDb = function(database_name, seed_file, callback) {
+var create = function(database_name, seed_file, callback) {
     var database = connection.database(database_name);
     var seed_file = require('./../../' + seed_file)
     database.create(function(err, res) {
@@ -73,13 +72,13 @@ var createDb = function(database_name, seed_file, callback) {
 
     // DUMP 
 
-var dumpToJSON = function(database_name, file, callback) {
+var save = function(database_name, file, callback) {
 
     var database = connection.database(database_name);
     var dump = [];
     database.all(function(err, res) {
 
-var docs = _.map(res, function(doc) {
+        var docs = _.map(res, function(doc) {
             return (doc);
         })
         async.forEach(docs, function(doc, callback) {
@@ -131,7 +130,7 @@ var docs = _.map(res, function(doc) {
     }
 }
 
-var importFromJSON = function(database_name, file, callback) {
+var load = function(database_name, file, callback) {
 
     var database = connection.database(database_name);
     fs.readFile(file, 'utf-8', function(err, res) {
@@ -140,7 +139,7 @@ var importFromJSON = function(database_name, file, callback) {
     })
 }
 
-module.exports.importFromJSON = importFromJSON;
-module.exports.dumpToJSON = dumpToJSON;
-module.exports.createDb = createDb;
-module.exports.resetDb = resetDb;
+module.exports.load = load;
+module.exports.save = save;
+module.exports.create = create;
+module.exports.reset = reset;

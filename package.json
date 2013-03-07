@@ -16,7 +16,6 @@
       "cradle": "*",
       "commander": "1.1.1",
       "async": "*",
-      "bufferjs": "*",
       "underscore": "*"
   },
   "bin": {
@@ -25,6 +24,6 @@
   "devDependencies": {
   },
   "engines": {
-    "node": "*"
+    "node": "0.8.0"
   }
 }
