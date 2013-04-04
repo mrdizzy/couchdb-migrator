@@ -16,14 +16,14 @@ var reset = function(database_name, seed_file, callback) {
     database.destroy(function(error, response) {
         if (error) {
             if (error.error == "not_found") {
-                createDb(database_name, callback)
+                create(database_name, seed_file, callback)
             }
             else {
                 callback(error, response);
             }
         }
         else {
-            createDb(database_name, callback);
+            create(database_name, seed_file,callback);
         }
     })
 }
