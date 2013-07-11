@@ -4,7 +4,7 @@ var migrator = require('./../index'),
     cli.on('--help', function() {
         console.log('Use one of the following commands:');
         console.log('');
-        console.log('    save - dumps database specified by --database into a JSON file');
+        console.log('    dump - dumps database specified by --database into a JSON file');
         console.log('    load - imports database in file specified by --file into database specified by --database');
         console.log('    create - creates a database named by --database and then imports --file');
         console.log('    reset - resets database named by --database and then imports --file');
@@ -20,8 +20,10 @@ var callback = function(err, response) {
     console.log(err, response);
 }
 
-if (!cli.file) {
-    console.log("No cli file");
+if (!cli.file && cli.args[0] != "create") {
+    cli.file = require("./../../../config/" + cli.database)
+    cli.design_file = require("./../../../config/" + cli.database + "_design")
 }
 
-migrator[cli.args[0]](cli.database,cli.file, callback)  
+
+migrator[cli.args[0]](cli, callback)  

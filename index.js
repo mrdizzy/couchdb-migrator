@@ -1,7 +1,7 @@
 var _ = require('underscore'),
     async = require('async'),
     fs = require('fs'),
-    database = require(__dirname + '/../../config/database'),
+    database = require(__dirname + '/../../config/db_connection'),
     cradle = require('cradle'),
     connection = new(cradle.Connection)(database.host, database.port, {
         auth: {
@@ -11,6 +11,7 @@ var _ = require('underscore'),
         cache: false
     });
 
+// Destroys the database and then recreates it and loads the seed file
 var reset = function(database_name, seed_file, callback) {
     var database = connection.database(database_name);
     database.destroy(function(error, response) {
@@ -28,20 +29,14 @@ var reset = function(database_name, seed_file, callback) {
     })
 }
 
-var create = function(database_name, seed_file, callback) {
-    var database = connection.database(database_name);
-    var seed_file = require('./../../' + seed_file)
+var create = function(cli, callback) {
+    var database = connection.database(cli.database);
     database.create(function(err, res) {
-        if (err) {
-            callback(err, res);
-        }
-        else {
-            database.save(seed_file, function(err, res) {
-                if (err) {
-                    callback(err, res);
-                }
-                else {
-                    setUpSecurity(database_name, function(error, response) {
+            if(err) {       
+                callback(err,res)
+            }
+            else {
+                setUpSecurity(cli.database, function(error, response) {
                         if (error) {
                             callback(error, response)
                         }
@@ -49,9 +44,7 @@ var create = function(database_name, seed_file, callback) {
                             callback(error, response)
                         }
                     })
-                }
-            })
-        }
+            }
     })
 }
 // Defaults to admin only allowing access to database
@@ -70,9 +63,9 @@ var create = function(database_name, seed_file, callback) {
         }, callback)
     }
 
-    // DUMP 
+    // Dumps the entire database to a JSON file 
 
-var save = function(database_name, file, callback) {
+var dump = function(database_name, file, callback) {
 
     var database = connection.database(database_name);
     var dump = [];
@@ -130,16 +123,15 @@ var save = function(database_name, file, callback) {
     }
 }
 
-var load = function(database_name, file, callback) {
-
-    var database = connection.database(database_name);
-    fs.readFile(file, 'utf-8', function(err, res) {
-        var doc = JSON.parse(res)
-        database.save(doc, callback)
-    })
+var load = function(cli, callback) {
+    var database = connection.database(cli.database)
+    database.save(cli.file, callback)
+    if (cli.design_file) {
+        database.save(cli.design_file, callback)
+    }
 }
 
 module.exports.load = load;
-module.exports.save = save;
+module.exports.dump = dump;
 module.exports.create = create;
 module.exports.reset = reset;
