@@ -1,0 +1,57 @@
+#!/usr/bin/env node
+var fs = require('fs'),
+_ = require('underscore'),
+migrator = require('./../index'),
+couchdb_connection = require(__dirname + '/./../../../config/couchdb/connection');
+
+var cli = require('commander');
+    cli.on('--help', function() {
+        console.log('Use one of the following commands:');
+        console.log('');
+        console.log('    dump - dumps database specified by --database into a JSON file');
+        console.log('    load - imports database in file specified by --file into database specified by --database');
+        console.log('    create - creates a database named by --database');
+        console.log('    reset - resets database named by --database');
+    });
+    cli.on('', function() {
+        console.log('Please enter a command')
+    });
+    cli.version('0.0.1')
+    .option('-d, --database [name]', "Database name")
+    .option('-f, --file [filename]', "Source file/output file");
+
+    cli.parse(process.argv);
+    
+var callback = function(err, response) {
+    console.log(err, response)
+}    
+    // If no database name is specified at the command line, use the database name specified in connection.json
+if (!cli.database && couchdb_connection.database) {
+    cli.database = couchdb_connection.database;
+}
+else if (!cli.database && !couchdb_connection.database) {
+    console.log("Please specify a database in connnection.json or using --database")
+}
+
+cli.file = cli.file || cli.database + "_docs"
+
+// Find seed files in /couchdb directory. Filenaming convention
+// is the name of the database appended by _design and _docs
+try {
+    
+cli.file = require("./../../../config/couchdb/" + cli.database + "_docs")
+}
+catch(e) {
+    console.log("No seed file found so no data will be loaded" + "....")
+    cli.file = undefined;
+}
+if (fs.existsSync("./../../../config/couchdb" + cli.database + "_design")) {
+    cli.design_file = require("./../../../config/couchdb" + cli.database + "_design");
+}
+ 
+if(!cli.args[0]) {
+    console.log("Please enter a command. Try: migrate --help")
+    process.exit(1);
+}
+
+migrator[cli.args[0]](cli, callback)  
